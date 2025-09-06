@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aplikasi Agenda Surat Masuk dan Surat Keluar</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .tab-active {
+            background-color: #3b82f6;
+            color: white;
+        }
+        .fade-in {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .file-input {
+            display: none;
+        }
+        .file-label {
+            cursor: pointer;
+            border: 1px solid #d1d5db;
+            border-radius: 0.375rem;
+            padding: 0.5rem;
+            display: inline-block;
+            width: 100%;
+            background-color: #f9fafb;
+        }
+        .file-label:hover {
+            background-color: #e5e7eb;
+        }
+    </style>
+</head>
+<body class="p-4">
+    <div class="max-w-6xl mx-auto bg-white rounded-xl shadow-2xl overflow-hidden fade-in">
+        <div class="bg-gradient-to-r from-blue-600 to-indigo-700 text-white p-6 text-center">
+            <h1 class="text-3xl font-bold mb-2"><i class="fas fa-envelope mr-2"></i>Aplikasi Agenda Surat Masuk dan Surat Keluar</h1>
+            <h1 class="text-3xl font-bold mb-2"></i>Komisi Pemilihan Umum Kabupaten Bekasi</h1>
+            <p class="text-blue-100">Kelola surat masuk dan keluar dengan efisien, termasuk upload file PDF</p>
+        </div>
+        
+        <!-- Tab Navigation -->
+        <div class="flex bg-gray-100">
+            <button id="incomingTab" class="flex-1 py-3 px-4 text-center border-b-4 border-transparent hover:border-blue-500 tab-active" onclick="showSection('incoming')">
+                <i class="fas fa-inbox mr-2"></i>Surat Masuk
+            </button>
+            <button id="outgoingTab" class="flex-1 py-3 px-4 text-center border-b-4 border-transparent hover:border-blue-500" onclick="showSection('outgoing')">
+                <i class="fas fa-paper-plane mr-2"></i>Surat Keluar
+            </button>
+        </div>
+        
+        <!-- Surat Masuk Section -->
+        <div id="incomingSection" class="p-6">
+            <h2 class="text-xl font-semibold mb-4 text-gray-800"><i class="fas fa-plus-circle mr-2"></i>Tambah Surat Masuk</h2>
+            <form id="incomingForm" class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                <div>
+                    <label for="incomingNo" class="block text-sm font-medium text-gray-700 mb-1">No. Surat</label>
+                    <input type="text" id="incomingNo" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+                <div>
+                    <label for="incomingDate" class="block text-sm font-medium text-gray-700 mb-1">Tanggal</label>
+                    <input type="date" id="incomingDate" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+                <div>
+                    <label for="incomingSender" class="block text-sm font-medium text-gray-700 mb-1">Pengirim</label>
+                    <input type="text" id="incomingSender" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+                <div>
+                    <label for="incomingSubject" class="block text-sm font-medium text-gray-700 mb-1">Perihal</label>
+                    <input type="text" id="incomingSubject" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+                <div>
+                    <label for="incomingPdf" class="block text-sm font-medium text-gray-700 mb-1">File PDF</label>
+                    <input type="file" id="incomingPdf" accept=".pdf" class="file-input">
+                    <label for="incomingPdf" class="file-label"><i class="fas fa-upload mr-2"></i>Pilih File PDF</label>
+                    <span id="incomingPdfName" class="text-sm text-gray-500 mt-1 block"></span>
+                </div>
+                <div class="md:col-span-3">
+                    <button type="submit" class="w-full bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md transition duration-300 flex items-center justify-center">
+                        <i class="fas fa-save mr-2"></i>Simpan
+                    </button>
+                </div>
+            </form>
+            <div class="overflow-x-auto">
+                <table class="w-full table-auto mb-4">
+                    <thead>
+                        <tr class="bg-gray-100">
+                            <th class="px-4 py-2 text-left text-gray-700">No. Surat</th>
+                            <th class="px-4 py-2 text-left text-gray-700">Tanggal</th>
+                            <th class="px-4 py-2 text-left text-gray-700">Pengirim</th>
+                            <th class="px-4 py-2 text-left text-gray-700">Perihal</th>
+                            <th class="px-4 py-2 text-left text-gray-700">File PDF</th>
+                            <th class="px-4 py-2 text-left text-gray-700">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody id="incomingTable" class="text-gray-700"></tbody>
+                </table>
+            </div>
+            <div id="incomingEmpty" class="flex flex-col items-center justify-center py-12 text-gray-400">
+                <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/46fed3f3-7a63-4ded-ad07-0a209e3db911.png" alt="Illustration of an empty mailbox with incoming letters concept, showing an open empty inbox in a modern office setting with clean desks and soft lighting" class="w-48 h-auto mb-4 rounded-lg" onerror="this.style.display='none';">
+                <p class="text-lg">Belum ada surat masuk. Tambahkan yang pertama!</p>
+            </div>
+        </div>
+        
+        <!-- Surat Keluar Section -->
+        <div id="outgoingSection" class="p-6 hidden">
+            <h2 class="text-xl font-semibold mb-4 text-gray-800"><i class="fas fa-plus-circle mr-2"></i>Tambah Surat Keluar</h2>
+            <form id="outgoingForm" class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                <div>
+                    <label for="outgoingNo" class="block text-sm font-medium text-gray-700 mb-1">No. Surat</label>
+                    <input type="text" id="outgoingNo" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+                <div>
+                    <label for="outgoingDate" class="block text-sm font-medium text-gray-700 mb-1">Tanggal</label>
+                    <input type="date" id="outgoingDate" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+                <div>
+                    <label for="outgoingRecipient" class="block text-sm font-medium text-gray-700 mb-1">Penerima</label>
+                    <input type="text" id="outgoingRecipient" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+                <div>
+                    <label for="outgoingSubject" class="block text-sm font-medium text-gray-700 mb-1">Perihal</label>
+                    <input type="text" id="outgoingSubject" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+                <div>
+                    <label for="outgoingPdf" class="block text-sm font-medium text-gray-700 mb-1">File PDF</label>
+                    <input type="file" id="outgoingPdf" accept=".pdf" class="file-input">
+                    <label for="outgoingPdf" class="file-label"><i class="fas fa-upload mr-2"></i>Pilih File PDF</label>
+                    <span id="outgoingPdfName" class="text-sm text-gray-500 mt-1 block"></span>
+                </div>
+                <div class="md:col-span-3">
+                    <button type="submit" class="w-full bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md transition duration-300 flex items-center justify-center">
+                        <i class="fas fa-save mr-2"></i>Simpan
+                    </button>
+                </div>
+            </form>
+            <div class="overflow-x-auto">
+                <table class="w-full table-auto mb-4">
+                    <thead>
+                        <tr class="bg-gray-100">
+                            <th class="px-4 py-2 text-left text-gray-700">No. Surat</th>
+                            <th class="px-4 py-2 text-left text-gray-700">Tanggal</th>
+                            <th class="px-4 py-2 text-left text-gray-700">Penerima</th>
+                            <th class="px-4 py-2 text-left text-gray-700">Perihal</th>
+                            <th class="px-4 py-2 text-left text-gray-700">File PDF</th>
+                            <th class="px-4 py-2 text-left text-gray-700">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody id="outgoingTable" class="text-gray-700"></tbody>
+                </table>
+            </div>
+            <div id="outgoingEmpty" class="flex flex-col items-center justify-center py-12 text-gray-400">
+                <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/361f3c98-55c2-45c3-9caf-e3b0f83c7e2c.png" alt="Illustration of an empty mailbox with outgoing letters concept, showing an open empty outbox in a modern office setting with clean desks and soft lighting" class="w-48 h-auto mb-4 rounded-lg" onerror="this.style.display='none';">
+                <p class="text-lg">Belum ada surat keluar. Tambahkan yang pertama!</p>
+            </div>
+        </div>
+        
+        <!-- Footer -->
+        <div class="bg-gray-100 p-4 text-center text-gray-600">
+            <p>© 2025 Aplikasi Agenda Surat dengan Upload PDF. Dibuat oleh Yayan </p>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            loadData('incoming');
+            loadData('outgoing');
+            showSection('incoming');
+            
+            let today = new Date().toISOString().substr(0, 10);
+            document.getElementById('incomingDate').value = today;
+            document.getElementById('outgoingDate').value = today;
+            
+            // File input change listeners
+            document.getElementById('incomingPdf').addEventListener('change', function(e) {
+                const fileName = e.target.files[0] ? e.target.files[0].name : '';
+                document.getElementById('incomingPdfName').textContent = fileName;
+            });
+            
+            document.getElementById('outgoingPdf').addEventListener('change', function(e) {
+                const fileName = e.target.files[0] ? e.target.files[0].name : '';
+                document.getElementById('outgoingPdfName').textContent = fileName;
+            });
+        });
+
+        function showSection(section) {
+            const incoming = document.getElementById('incomingSection');
+            const outgoing = document.getElementById('outgoingSection');
+            const incomingTab = document.getElementById('incomingTab');
+            const outgoingTab = document.getElementById('outgoingTab');
+            
+            if (section === 'incoming') {
+                incoming.classList.remove('hidden');
+                outgoing.classList.add('hidden');
+                incomingTab.classList.add('tab-active');
+                outgoingTab.classList.remove('tab-active');
+            } else {
+                incoming.classList.add('hidden');
+                outgoing.classList.remove('hidden');
+                outgoingTab.classList.add('tab-active');
+                incomingTab.classList.remove('tab-active');
+            }
+        }
+
+        document.getElementById('incomingForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const pdfFile = document.getElementById('incomingPdf').files[0];
+            const pdfName = pdfFile ? pdfFile.name : '';
+            
+            const letter = {
+                id: Date.now(),
+                no: document.getElementById('incomingNo').value.trim(),
+                date: document.getElementById('incomingDate').value,
+                sender: document.getElementById('incomingSender').value.trim(),
+                subject: document.getElementById('incomingSubject').value.trim(),
+                pdfName: pdfName,
+                type: 'incoming'
+            };
+            saveLetter(letter);
+            addToTable(letter);
+            document.getElementById('incomingForm').reset();
+            document.getElementById('incomingPdfName').textContent = '';
+            let today = new Date().toISOString().substr(0, 10);
+            document.getElementById('incomingDate').value = today;
+        });
+
+        document.getElementById('outgoingForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const pdfFile = document.getElementById('outgoingPdf').files[0];
+            const pdfName = pdfFile ? pdfFile.name : '';
+            
+            const letter = {
+                id: Date.now(),
+                no: document.getElementById('outgoingNo').value.trim(),
+                date: document.getElementById('outgoingDate').value,
+                recipient: document.getElementById('outgoingRecipient').value.trim(),
+                subject: document.getElementById('outgoingSubject').value.trim(),
+                pdfName: pdfName,
+                type: 'outgoing'
+            };
+            saveLetter(letter);
+            addToTable(letter);
+            document.getElementById('outgoingForm').reset();
+            document.getElementById('outgoingPdfName').textContent = '';
+            let today = new Date().toISOString().substr(0, 10);
+            document.getElementById('outgoingDate').value = today;
+        });
+
+        function saveLetter(letter) {
+            let data = JSON.parse(localStorage.getItem(letter.type)) || [];
+            data.push(letter);
+            localStorage.setItem(letter.type, JSON.stringify(data));
+        }
+
+        function loadData(type) {
+            const data = JSON.parse(localStorage.getItem(type)) || [];
+            if (data.length > 0) {
+                data.forEach(addToTable);
+                showTable(type);
+            } else {
+                showEmpty(type);
+            }
+        }
+
+        function addToTable(letter) {
+            const table = document.getElementById(letter.type + 'Table');
+            const row = table.insertRow();
+            row.className = 'border-b border-gray-200 hover:bg-gray-50';
+            
+            row.insertCell(0).innerHTML = `<span class="font-medium">${letter.no}</span>`;
+            row.insertCell(1).innerHTML = `<span class="text-blue-600">${formatDate(letter.date)}</span>`;
+            if (letter.type === 'incoming') {
+                row.insertCell(2).textContent = letter.sender;
+            } else {
+                row.insertCell(2).textContent = letter.recipient;
+            }
+            row.insertCell(3).textContent = letter.subject;
+            row.insertCell(4).innerHTML = letter.pdfName ? `<span class="text-green-600">${letter.pdfName}</span> <button onclick="viewPdf('${letter.pdfName}')" class="text-blue-500 hover:text-blue-700 ml-2"><i class="fas fa-eye"></i></button>` : '<span class="text-gray-400">-</span>';
+            row.insertCell(5).innerHTML = `<button onclick="deleteLetter('${letter.type}', ${letter.id}, this)" class="text-red-500 hover:text-red-700"><i class="fas fa-trash"></i> Hapus</button>`;
+        }
+
+        function deleteLetter(type, id, button) {
+            let data = JSON.parse(localStorage.getItem(type)) || [];
+            data = data.filter(item => item.id !== id);
+            localStorage.setItem(type, JSON.stringify(data));
+            const row = button.parentElement.parentElement;
+            row.remove();
+            if (data.length === 0) {
+                showEmpty(type);
+            }
+        }
+
+        function viewPdf(fileName) {
+            alert(`Untuk melihat PDF "${fileName}", file akan dibuka di tab baru. (Simulasi: dalam aplikasi nyata, ini akan membuka file yang diunggah.)`);
+            // Dalam simulasi, kita tidak bisa benar-benar membuka file tanpa menyimpan data blob.
+            // Jika diperlukan, bisa disimpan blob di localStorage, tapi batasannya ada.
+        }
+
+        function showTable(type) {
+            document.getElementById(type + 'Table').style.display = 'table-row-group';
+            document.getElementById(type + 'Empty').style.display = 'none';
+        }
+
+        function showEmpty(type) {
+            document.getElementById(type + 'Table').style.display = 'none';
+            document.getElementById(type + 'Empty').style.display = 'flex';
+        }
+
+        function formatDate(dateString) {
+            const options = { year: 'numeric', month: 'short', day: 'numeric' };
+            return new Date(dateString).toLocaleDateString('id-ID', options);
+        }
+    </script>
+</body>
+</html>
+</content>
+</create_file>
